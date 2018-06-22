@@ -45,7 +45,7 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 	private Class currClass;
 	private Class currParent;
 	private Method currMethod;
-	TypeCheckVisitor(SymbolTable st) {
+	public TypeCheckVisitor(SymbolTable st) {
 		symbolTable = st;
 	}
 
@@ -378,7 +378,24 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 	}
 
 	// String s;
-	public Type visit(Identifier n) {
-		return this.symbolTable.getMethodType(n.s);
+	public Type visit(Identifier n)  {
+		if(this.currClass.containsVar(n.s)) {
+			return symbolTable.getVarType(currMethod, currClass, n.s);
+		}
+		if(this.currClass.containsMethod(n.s)) {
+			return symbolTable.getMethodType(n.s, currClass.getId());
+		}
+		if(this.currMethod != null && this.currMethod.containsVar(n.s)) {
+			return currMethod.getVar(n.s).type();
+		}
+		if(this.currMethod != null && this.currMethod.containsParam(n.s)) {
+			return this.currMethod.getParam(n.s).type();
+		} else {
+			Class classe = this.symbolTable.getClass(n.s);
+			if (classe == null) {
+				System.out.println("Variable doesnt exist.");
+			}
+			return classe.type();
+		}
 	}
 }

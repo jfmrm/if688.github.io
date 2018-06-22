@@ -63,6 +63,11 @@ public class Main {
 		Program p = new Program(main, cdl);
 		
 		PrettyPrintVisitor ppv = new PrettyPrintVisitor();
+		BuildSymbolTableVisitor stVis = new BuildSymbolTableVisitor();
+		stVis.visit(p);
+		TypeCheckVisitor tcv = new TypeCheckVisitor(stVis.getSymbolTable());
+		tcv.visit(p);
+
 		ppv.visit(p);
 	}
 
